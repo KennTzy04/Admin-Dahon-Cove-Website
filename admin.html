@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dahon Cove Admin Panel</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="css/admin.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="loginSection" class="container-fluid d-flex align-items-center justify-content-center min-vh-100">
+        <div class="card shadow-lg" style="max-width: 400px;">
+            <div class="card-body p-5">
+                <h2 class="text-center mb-4">
+                    <i class="bi bi-shield-lock text-primary"></i>
+                    Admin Login
+                </h2>
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </button>
+                </form>
+                <div id="loginError" class="alert alert-danger mt-3" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboardSection" class="container-fluid" style="display: none;">
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">
+                    <i class="bi bi-gear-fill"></i> Dahon Cove Admin
+                </a>
+                <div class="navbar-nav ms-auto">
+                    <button class="btn btn-outline-light" onclick="logout()">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid mt-4">
+            <!-- Tabs Navigation -->
+            <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="gallery-tab" data-bs-toggle="tab" data-bs-target="#gallery" type="button" role="tab">
+                        <i class="bi bi-images"></i> Gallery
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="blog-tab" data-bs-toggle="tab" data-bs-target="#blog" type="button" role="tab">
+                        <i class="bi bi-journal-text"></i> Blog
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="packages-tab" data-bs-toggle="tab" data-bs-target="#packages" type="button" role="tab">
+                        <i class="bi bi-currency-dollar"></i> Packages
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="testimonials-tab" data-bs-toggle="tab" data-bs-target="#testimonials" type="button" role="tab">
+                        <i class="bi bi-chat-quote"></i> Testimonials
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab">
+                        <i class="bi bi-gear"></i> Settings
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content mt-3" id="adminTabContent">
+                <!-- Gallery Tab -->
+                <div class="tab-pane fade show active" id="gallery" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="bi bi-upload"></i> Upload Image</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="galleryUploadForm">
+                                        <div class="mb-3">
+                                            <label for="galleryImage" class="form-label">Select Image</label>
+                                            <input type="file" class="form-control" id="galleryImage" accept="image/*" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="imageTitle" class="form-label">Title (Optional)</label>
+                                            <input type="text" class="form-control" id="imageTitle">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="imageDescription" class="form-label">Description (Optional)</label>
+                                            <textarea class="form-control" id="imageDescription" rows="3"></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-upload"></i> Upload
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="bi bi-images"></i> Gallery Images</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="galleryGrid" class="row g-3">
+                                        <!-- Images will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blog Tab -->
+                <div class="tab-pane fade" id="blog" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="bi bi-plus-circle"></i> Create Blog Post</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="blogForm">
+                                        <div class="mb-3">
+                                            <label for="blogTitle" class="form-label">Title</label>
+                                            <input type="text" class="form-control" id="blogTitle" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="blogContent" class="form-label">Content</label>
+                                            <textarea class="form-control" id="blogContent" rows="8" required></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="blogImages" class="form-label">Images (Optional)</label>
+                                            <input type="file" class="form-control" id="blogImages" accept="image/*" multiple>
+                                        </div>
+                                        <input type="hidden" id="blogId">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-save"></i> Save Post
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" onclick="resetBlogForm()">
+                                            <i class="bi bi-arrow-clockwise"></i> Reset
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="bi bi-journal-text"></i> Blog Posts</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="blogList">
+                                        <!-- Blog posts will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Packages Tab -->
+                <div class="tab-pane fade" id="packages" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="bi bi-plus-circle"></i> Add Package</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="packageForm">
+                                        <div class="mb-3">
+                                            <label for="packageName" class="form-label">Package Name</label>
+                                            <input type="text" class="form-control" id="packageName" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="packagePrice" class="form-label">Price</label>
+                                            <input type="text" class="form-control" id="packagePrice" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="packageFeatures" class="form-label">Features (one per line)</label>
+                                            <textarea class="form-control" id="packageFeatures" rows="6" required></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="packageOrder" class="form-label">Display Order</label>
+                                            <input type="number" class="form-control" id="packageOrder" value="1" min="1">
+                                        </div>
+                                        <input type="hidden" id="packageId">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-save"></i> Save Package
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" onclick="resetPackageForm()">
+                                            <i class="bi bi-arrow-clockwise"></i> Reset
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="bi bi-currency-dollar"></i> Packages</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="packagesList">
+                                        <!-- Packages will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonials Tab -->
+                <div class="tab-pane fade" id="testimonials" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="bi bi-plus-circle"></i> Add Testimonial</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="testimonialForm">
+                                        <div class="mb-3">
+                                            <label for="testimonialName" class="form-label">Name</label>
+                                            <input type="text" class="form-control" id="testimonialName" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="testimonialImage" class="form-label">Profile Image</label>
+                                            <input type="file" class="form-control" id="testimonialImage" accept="image/*">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="testimonialText" class="form-label">Testimonial</label>
+                                            <textarea class="form-control" id="testimonialText" rows="4" required></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="testimonialOrder" class="form-label">Display Order</label>
+                                            <input type="number" class="form-control" id="testimonialOrder" value="1" min="1">
+                                        </div>
+                                        <input type="hidden" id="testimonialId">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-save"></i> Save Testimonial
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" onclick="resetTestimonialForm()">
+                                            <i class="bi bi-arrow-clockwise"></i> Reset
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="bi bi-chat-quote"></i> Testimonials</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="testimonialsList">
+                                        <!-- Testimonials will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div class="tab-pane fade" id="settings" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-8 mx-auto">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="bi bi-gear"></i> Site Settings</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="settingsForm">
+                                        <div class="mb-3">
+                                            <label for="siteTitle" class="form-label">Site Title</label>
+                                            <input type="text" class="form-control" id="siteTitle">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="aboutSection" class="form-label">About Section</label>
+                                            <textarea class="form-control" id="aboutSection" rows="6"></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="contactEmail" class="form-label">Contact Email</label>
+                                            <input type="email" class="form-control" id="contactEmail">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="contactPhone" class="form-label">Contact Phone</label>
+                                            <input type="text" class="form-control" id="contactPhone">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="contactAddress" class="form-label">Contact Address</label>
+                                            <textarea class="form-control" id="contactAddress" rows="3"></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-save"></i> Save Settings
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div id="alertContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;"></div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <!-- Custom JS -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html> 

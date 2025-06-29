@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Authentication Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        #console-output {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 5px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Firebase Authentication Test</h1>
+    
+    <div id="loginForm">
+        <h3>Login Test</h3>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="Enter admin email">
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Enter admin password">
+        </div>
+        <button onclick="testLogin()">Test Login</button>
+        <button class="btn-danger" onclick="testLogout()">Test Logout</button>
+    </div>
+
+    <div id="status"></div>
+    <div id="userInfo" style="display: none;">
+        <h3>User Information</h3>
+        <div id="userDetails"></div>
+    </div>
+
+    <div id="console-output"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    
+    <!-- Firebase Config -->
+    <script src="js/firebase-config.js"></script>
+    
+    <script>
+        // Override console.log to capture output
+        const originalLog = console.log;
+        const originalError = console.error;
+        const consoleOutput = document.getElementById('console-output');
+        
+        function addToConsole(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.innerHTML = `<span style="color: #666;">[${timestamp}]</span> <span style="color: ${type === 'error' ? 'red' : 'black'};">${message}</span>`;
+            consoleOutput.appendChild(div);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole(args.join(' '));
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsole(args.join(' '), 'error');
+        };
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function showUserInfo(user) {
+            const userInfoDiv = document.getElementById('userInfo');
+            const userDetailsDiv = document.getElementById('userDetails');
+            
+            userDetailsDiv.innerHTML = `
+                <p><strong>UID:</strong> ${user.uid}</p>
+                <p><strong>Email:</strong> ${user.email}</p>
+                <p><strong>Email Verified:</strong> ${user.emailVerified}</p>
+                <p><strong>Display Name:</strong> ${user.displayName || 'Not set'}</p>
+                <p><strong>Last Sign In:</strong> ${new Date(user.metadata.lastSignInTime).toLocaleString()}</p>
+            `;
+            
+            userInfoDiv.style.display = 'block';
+        }
+
+        function hideUserInfo() {
+            document.getElementById('userInfo').style.display = 'none';
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                showStatus('Please enter both email and password', 'error');
+                return;
+            }
+            
+            console.log('Attempting login with email:', email);
+            showStatus('Attempting login...', 'info');
+            
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                console.log('Login successful!', user);
+                showStatus('Login successful!', 'success');
+                showUserInfo(user);
+                
+            } catch (error) {
+                console.error('Login failed:', error);
+                showStatus(`Login failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testLogout() {
+            try {
+                await auth.signOut();
+                console.log('Logout successful');
+                showStatus('Logout successful!', 'success');
+                hideUserInfo();
+            } catch (error) {
+                console.error('Logout failed:', error);
+                showStatus(`Logout failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Listen for auth state changes
+        auth.onAuthStateChanged((user) => {
+            console.log('Auth state changed:', user ? 'User logged in' : 'No user');
+            
+            if (user) {
+                showStatus('User is logged in', 'success');
+                showUserInfo(user);
+            } else {
+                showStatus('No user logged in', 'info');
+                hideUserInfo();
+            }
+        });
+
+        // Auto-fill test credentials (remove in production)
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Auth test page loaded');
+            // You can add test credentials here for easier testing
+            // document.getElementById('email').value = 'admin@example.com';
+            // document.getElementById('password').value = 'password123';
+        });
+    </script>
+</body>
+</html> 

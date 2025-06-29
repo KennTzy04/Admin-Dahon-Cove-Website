@@ -1,0 +1,43 @@
+{
+  "name": "dahon-cove-admin-panel",
+  "version": "1.0.0",
+  "description": "A responsive, secure admin panel for Dahon Cove resort website built with Firebase",
+  "main": "index.html",
+  "scripts": {
+    "start": "firebase serve",
+    "build": "echo 'No build step required for static site'",
+    "deploy": "firebase deploy",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:firestore": "firebase deploy --only firestore",
+    "deploy:storage": "firebase deploy --only storage",
+    "rules:firestore": "firebase deploy --only firestore:rules",
+    "rules:storage": "firebase deploy --only storage",
+    "indexes": "firebase deploy --only firestore:indexes"
+  },
+  "keywords": [
+    "firebase",
+    "admin-panel",
+    "resort",
+    "guesthouse",
+    "website",
+    "javascript",
+    "html",
+    "css"
+  ],
+  "author": "Dahon Cove Admin",
+  "license": "MIT",
+  "devDependencies": {
+    "firebase-tools": "^12.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/dahon-cove-admin-panel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/dahon-cove-admin-panel/issues"
+  },
+  "homepage": "https://github.com/yourusername/dahon-cove-admin-panel#readme"
+} 
