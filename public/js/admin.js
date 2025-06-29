@@ -61,6 +61,14 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Firebase db object:', db);
     console.log('Firebase storage object:', storage);
     
+    // Ensure DOM elements exist
+    if (!loginSection || !dashboardSection) {
+        console.error('Critical DOM elements not found!');
+        console.error('loginSection:', loginSection);
+        console.error('dashboardSection:', dashboardSection);
+        return;
+    }
+    
     auth.onAuthStateChanged((user) => {
         console.log('Auth state changed:', user ? 'User logged in' : 'No user');
         console.log('User details:', user ? { uid: user.uid, email: user.email } : 'No user');
@@ -71,13 +79,20 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Login section display before:', loginSection.style.display);
             console.log('Dashboard section display before:', dashboardSection.style.display);
             
+            // Force hide loading overlay first
+            hideLoading();
+            
+            // Show dashboard and hide login
             loginSection.style.display = 'none';
             dashboardSection.style.display = 'block';
             
             console.log('Login section display after:', loginSection.style.display);
             console.log('Dashboard section display after:', dashboardSection.style.display);
             
-            loadAllData();
+            // Add a small delay to ensure DOM updates
+            setTimeout(() => {
+                loadAllData();
+            }, 100);
         } else {
             currentUser = null;
             console.log('Showing login, hiding dashboard...');
@@ -99,12 +114,12 @@ document.addEventListener('DOMContentLoaded', function() {
             await auth.signInWithEmailAndPassword(email, password);
             console.log('Login successful!');
             showAlert('Login successful!', 'success');
+            // Don't hide loading here - let the auth state listener handle it
         } catch (error) {
             console.error('Login error:', error);
+            hideLoading(); // Hide loading on error
             loginError.textContent = error.message;
             loginError.style.display = 'block';
-        } finally {
-            hideLoading();
         }
     });
 
@@ -116,6 +131,24 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Logout error:', error);
             showAlert('Error logging out', 'danger');
         });
+    };
+
+    // Manual dashboard toggle for debugging
+    window.toggleDashboard = function() {
+        console.log('Manual dashboard toggle called');
+        console.log('Current user:', currentUser);
+        console.log('Login section display:', loginSection.style.display);
+        console.log('Dashboard section display:', dashboardSection.style.display);
+        
+        if (currentUser) {
+            loginSection.style.display = 'none';
+            dashboardSection.style.display = 'block';
+            hideLoading();
+            loadAllData();
+            showAlert('Dashboard manually activated', 'info');
+        } else {
+            showAlert('No user logged in', 'warning');
+        }
     };
 
     // Load all data when dashboard is shown
