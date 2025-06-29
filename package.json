@@ -5,6 +5,7 @@
   "main": "index.html",
   "scripts": {
     "start": "firebase serve",
+    "build": "echo 'No build step required for static site'",
     "deploy": "firebase deploy",
     "deploy:hosting": "firebase deploy --only hosting",
     "deploy:firestore": "firebase deploy --only firestore",
